@@ -1,42 +1,11 @@
 import { Component } from "react";
 import CartItem from "./CartItem";
+import NavBar from "./Nav";
 
 class Cart extends Component {
     //Creates the menu as part of the state in base for (no add-ons)
     state = {
-        menu: [
-            {
-                id: 1,
-                image: "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse3.mm.bing.net%2Fth%3Fid%3DOIP.2rjuctA82u1FTqLlyGJmogHaEK%26pid%3DApi&f=1",
-                name: "Pizza",
-                description: "Fresh from the oven!",
-                size: "Small",
-                // second value in toppings is the key
-                toppings: [["extra cheese", 0], ["pepperoni", 1], ["onion", 2]],
-                price: 18.99,
-                quantity: 3
-            },
-            {
-                id: 2,
-                image: "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse4.mm.bing.net%2Fth%3Fid%3DOIP.G13rEy-90dsbrAVFBL2MQwHaFj%26pid%3DApi&f=1",
-                name: "Salad",
-                description: "Fresh and crisp garden salad!",
-                size: "Small",
-                toppings: [],
-                price: 10.99,
-                quantity: 2
-            },
-            {
-                id: 3,
-                image: "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%3Fid%3DOIP.ZmLZZboWmuX2ZyGQLHFOwQHaD5%26pid%3DApi&f=1",
-                name: "Wings",
-                description: "Our famous Buffalo style hot wings!",
-                size: "Medium",
-                toppings: [["blue cheese", 3]],
-                price: 12.99,
-                quantity: 1
-            },
-        ]
+        menu: []
     }
 
 
@@ -52,38 +21,45 @@ class Cart extends Component {
         // renders empty cart message when no more items
         if (this.state.menu.length === 0) {
             return (
-                <div>
-                    <h4 className="empty-cart-message">Cart is empty. Click on the Menu tab to add items!</h4>
-                </div>
+                <>
+                    {/* render customer  navbar */}
+                    <NavBar />
+                    <div>
+                        <h4 className="empty-cart-message">Cart is empty. Click on the Menu tab to add items!</h4>
+                    </div>
+                </>
             )
         }
         else {
             return (
-                <div className="cart-div">
-                    <h4>Cart</h4>
-                    <div className="item-grid">
-                        {/* loops the array to return elements */}
-                        {this.state.menu.map((item, index) => {
-                            //renders the item as a MenuItem component and passes in props
-                            return (<CartItem
-                                key={item.id}
-                                item={item}
-                                // methods passed as props for increase and decreasing the quantity
-                                increaseQuantity={this.increaseQuantity}
-                                decreaseQuantity={this.decreaseQuantity}>
-                                {/* passes a button to the child component */}
-                                <button className="btn btn-danger" onClick={() => { this.deleteItem(index) }}>Remove</button>
-                            </CartItem>);
-                        })}
+                // render customer navbar
+                <>
+                    <NavBar />                <div className="cart-div">
+                        <h4>Cart</h4>
+                        <div className="item-grid">
+                            {/* loops the array to return elements */}
+                            {this.state.menu.map((item, index) => {
+                                //renders the item as a MenuItem component and passes in props
+                                return (<CartItem
+                                    key={item.id}
+                                    item={item}
+                                    // methods passed as props for increase and decreasing the quantity
+                                    increaseQuantity={this.increaseQuantity}
+                                    decreaseQuantity={this.decreaseQuantity}>
+                                    {/* passes a button to the child component */}
+                                    <button className="btn btn-danger" onClick={() => { this.deleteItem(index) }}>Remove</button>
+                                </CartItem>);
+                            })}
+                        </div>
+                        <div className="total-price-div">
+                            <h1>Total: ${this.calculateTotalPrice(this.state.menu)}</h1>
+                        </div>
+                        <div className="checkout-div">
+                            <button className="pickup-btn btn btn-primary">Order Pick-up (free)</button>
+                            <button className="delivery-btn btn btn-primary">Order Delivery (+ $8.00)</button>
+                        </div>
                     </div>
-                    <div className="total-price-div">
-                        <h1>Total: ${this.calculateTotalPrice(this.state.menu)}</h1>
-                    </div>
-                    <div className="checkout-div">
-                        <button className="pickup-btn btn btn-primary">Order Pick-up (free)</button>
-                        <button className="delivery-btn btn btn-primary">Order Delivery (+ $8.00)</button>
-                    </div>
-                </div>
+                </>
             )
         }
     }
@@ -127,6 +103,16 @@ class Cart extends Component {
         }
         // returns rounded to 2 decimal places
         return totalPrice.toFixed(2);
+    }
+
+    // to pull data from database to state
+    componentWillMount = async () => {
+        // get request from database server
+        let response = await fetch(" http://localhost:5000/Cart", { method: "GET" })
+        // converts the json data to js array
+        let menu = await response.json();
+        // sets the state to fetched values
+        this.setState({ menu: menu });
     }
 }
 

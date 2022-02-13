@@ -1,4 +1,7 @@
 import { Component } from "react";
+// remove on valid login
+import NavBar from "./Nav"
+import RestaurantNav from "./RestaurantNav";
 
 //The main component that is displayed to the user
 class Orders extends Component {
@@ -52,26 +55,30 @@ class Orders extends Component {
 
     render() {
         return (
-            < div className="order-div" >
-                <h4>{this.state.pageTitle}<span className="order-badge badge bg-danger">{this.state.count}</span></h4>
-                <table className="table">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Name</th>
-                            <th>Order</th>
-                            <th>Type</th>
-                            <th>Time</th>
-                            <th>Phone</th>
-                            <th>Address</th>
-                            <th>Order Ready</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {this.populateCustomers()}
-                    </tbody>
-                </table>
-            </ div>
+            <>
+                {/* <RestaurantNav /> */}
+                <NavBar />
+                < div className="order-div" >
+                    <h4>{this.state.pageTitle}<span className="order-badge badge bg-danger">{this.state.count}</span></h4>
+                    <table className="table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Name</th>
+                                <th>Order</th>
+                                <th>Type</th>
+                                <th>Time</th>
+                                <th>Phone</th>
+                                <th>Address</th>
+                                <th>Order Ready</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {this.populateCustomers()}
+                        </tbody>
+                    </table>
+                </ div>
+            </>
         )
     }
 

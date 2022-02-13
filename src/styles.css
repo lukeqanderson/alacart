@@ -91,6 +91,9 @@
 .quantity-label {
     margin-bottom: 10px;
 }
+.size-select {
+    margin-bottom: 20px;
+}
 
 /* login component */
 .login-div {
@@ -101,4 +104,10 @@
 }
 .login-break {
     margin-bottom: 15px;
+}
+
+/* error component */
+.error-div {
+    margin-top:20px;
+    margin-left: 20px;
 }
