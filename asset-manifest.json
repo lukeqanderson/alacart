@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/alacart/static/css/main.37a770e8.css",
+    "main.js": "/alacart/static/js/main.d4d59d7d.js",
+    "index.html": "/alacart/index.html",
+    "main.37a770e8.css.map": "/alacart/static/css/main.37a770e8.css.map",
+    "main.d4d59d7d.js.map": "/alacart/static/js/main.d4d59d7d.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.37a770e8.css",
+    "static/js/main.d4d59d7d.js"
+  ]
+}
