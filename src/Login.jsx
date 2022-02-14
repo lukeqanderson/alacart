@@ -1,6 +1,12 @@
 import { Component } from "react";
 import NavLogin from "./NavLogin";
-import { Navigate } from "react-router-dom";
+import Home from "./Home";
+import Orders from "./Orders";
+import Cart from "./Cart";
+import Menu from "./Menu";
+import NoPage from "./noPage.jsx";
+// for routing
+import { Route, Routes } from "react-router-dom";
 
 class Login extends Component {
     // sets state of login fields
@@ -8,57 +14,85 @@ class Login extends Component {
         email: "",
         password: "",
         isRestaurant: false,
-        validUsers: []
+        validUsers: [],
+        userValidCustomer: false,
+        userValidRestaurant: false
     }
+
     render() {
-        return (
-            <>
-                {/* render navbar for login */}
-                <NavLogin />
-                <div className="login-div">
-                    {/* creates bootstrap login form */}
-                    <form>
-                        <div className="mb-3">
-                            <label htmlFor="exampleInputEmail1" className="form-label">Email address</label>
-                            <input
-                                type="email"
-                                className="form-control"
-                                id="email"
-                                // sets value to the email state
-                                value={this.state.email}
-                                // sets the state to change on event listener
-                                onChange={(event) => {
-                                    this.setState({ email: event.target.value })
-                                }}
-                            />
-                        </div>
-                        <div className="mb-3">
-                            <label htmlFor="exampleInputPassword1" className="form-label">Password</label>
-                            <input
-                                type="password"
-                                className="form-control"
-                                id="password"
-                                // sets value to the password state
-                                value={this.state.password}
-                                // sets the state to change on event listener
-                                onChange={(event) => {
-                                    this.setState({ password: event.target.value })
-                                }}
-                            />
-                        </div>
-                        {this.state.message}
-                        <br className="login-break"></br>
-                        <button
-                            type="submit"
-                            className="btn btn-primary"
-                            // when user clicks it executes the login method
-                            onClick={this.login}>
-                            Login
-                        </button>
-                    </form>
-                </div>
-            </>
-        )
+        if (this.state.userValidCustomer === false & this.state.userValidRestaurant === false) {
+            return (
+                // renders login page for not authenticated
+                <>
+                    {/* render navbar for login */}
+                    <NavLogin />
+                    <div className="login-div">
+                        {/* creates bootstrap login form */}
+                        <form>
+                            <div className="mb-3">
+                                <label htmlFor="exampleInputEmail1" className="form-label">Email address</label>
+                                <input
+                                    type="email"
+                                    className="form-control"
+                                    id="email"
+                                    // sets value to the email state
+                                    value={this.state.email}
+                                    // sets the state to change on event listener
+                                    onChange={(event) => {
+                                        this.setState({ email: event.target.value })
+                                    }}
+                                />
+                            </div>
+                            <div className="mb-3">
+                                <label htmlFor="exampleInputPassword1" className="form-label">Password</label>
+                                <input
+                                    type="password"
+                                    className="form-control"
+                                    id="password"
+                                    // sets value to the password state
+                                    value={this.state.password}
+                                    // sets the state to change on event listener
+                                    onChange={(event) => {
+                                        this.setState({ password: event.target.value })
+                                    }}
+                                />
+                            </div>
+                            {this.state.message}
+                            <br className="login-break"></br>
+                            <button
+                                type="button"
+                                className="btn btn-primary"
+                                // when user clicks it executes the login method
+                                onClick={this.login}>
+                                Login
+                            </button>
+                        </form>
+                    </div>
+                </>
+
+            )
+        }
+        else if (this.state.userValidCustomer === true) {
+            // routes pages for customer
+            return (
+                <Routes>
+                    <Route path="/" exact element={<Home />} />
+                    <Route path="/menu" exact element={<Menu />} />
+                    <Route path="/cart" exact element={<Cart />} />
+                    <Route path="/home" exact element={<Home />} />
+                    {/* for 404 errors */}
+                    <Route path="*" element={<NoPage />} />
+                </Routes>
+            )
+        }
+        else {
+            return (
+                // routes orders page for restaurant
+                <Routes>
+                    <Route path="/" element={<Orders />} />
+                </Routes>
+            )
+        }
     }
 
     login = () => {
@@ -68,15 +102,13 @@ class Login extends Component {
             if (this.state.validUsers[i].password === this.state.password
                 & this.state.validUsers[i].email === this.state.email
                 & this.state.validUsers[i].isRestaurant === false) {
-                alert("yep");
-                < Navigate to="/home" />
+                this.setState({ userValidCustomer: true })
             }
             // checks credentials for restaurant
             else if (this.state.validUsers[i].password === this.state.password
                 & this.state.validUsers[i].email === this.state.email
                 & this.state.validUsers[i].isRestaurant === true) {
-                alert("YUP!");
-                < Navigate to="/orders" />
+                this.setState({ userValidRestaurant: true })
             }
         }
     }
@@ -89,8 +121,6 @@ class Login extends Component {
         let users = await response.json();
         // sets the state to fetched values
         this.setState({ validUsers: users });
-        console.log(this.state.validUsers);
-        alert(this.state.validUsers);
     }
 }
 

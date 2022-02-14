@@ -5,7 +5,8 @@ import NavBar from "./Nav";
 class Cart extends Component {
     //Creates the menu as part of the state in base for (no add-ons)
     state = {
-        menu: []
+        menu: [],
+        cartTotal: 0
     }
 
 
@@ -23,7 +24,7 @@ class Cart extends Component {
             return (
                 <>
                     {/* render customer  navbar */}
-                    <NavBar />
+                    <NavBar cartTotal={this.state.cartTotal}></NavBar>
                     <div>
                         <h4 className="empty-cart-message">Cart is empty. Click on the Menu tab to add items!</h4>
                     </div>
@@ -34,7 +35,9 @@ class Cart extends Component {
             return (
                 // render customer navbar
                 <>
-                    <NavBar />                <div className="cart-div">
+                    {/* passes calculate cart total to NavBar */}
+                    <NavBar cartTotal={this.state.cartTotal}></NavBar>
+                    <div className="cart-div">
                         <h4>Cart</h4>
                         <div className="item-grid">
                             {/* loops the array to return elements */}
@@ -58,6 +61,7 @@ class Cart extends Component {
                             <button className="pickup-btn btn btn-primary">Order Pick-up (free)</button>
                             <button className="delivery-btn btn btn-primary">Order Delivery (+ $8.00)</button>
                         </div>
+                        <h1>{this.state.cartTotal}</h1>
                     </div>
                 </>
             )
@@ -77,6 +81,7 @@ class Cart extends Component {
             // updates to state
             this.setState({ menu: menu })
         }
+        this.calculateCartTotal();
     }
 
     // method to decrease quantity
@@ -92,6 +97,7 @@ class Cart extends Component {
             // updates to state
             this.setState({ menu: menu })
         }
+        this.calculateCartTotal();
     }
 
     // method to calculate total price
@@ -113,6 +119,22 @@ class Cart extends Component {
         let menu = await response.json();
         // sets the state to fetched values
         this.setState({ menu: menu });
+        // calculates the cart total
+        this.calculateCartTotal();
+    }
+
+    // method to calculate amount of items in cart
+    calculateCartTotal = () => {
+        let total = 0;
+        // goes through each item in the menu state to calculate total
+        for (let i = 0; i < this.state.menu.length; i++) {
+            total += parseInt(this.state.menu[i].quantity);
+        }
+
+        // sets state to cart total
+        this.setState({
+            cartTotal: total
+        })
     }
 }
 

@@ -20,7 +20,7 @@ class RestaurantNav extends Component {
                         <ul className="navbar-nav me-auto mb-2 mb-lg-0">
                             {/* nav links */}
                             <li className="nav-item">
-                                <a className="nav-link active" aria-current="page" href="/#">Orders</a>
+                                <a className="nav-link active" aria-current="page" href="/Orders">Orders</a>
                             </li>
                         </ul>
                     </div>

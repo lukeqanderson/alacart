@@ -1,6 +1,5 @@
 import { Component } from "react";
 // remove on valid login
-import NavBar from "./Nav"
 import RestaurantNav from "./RestaurantNav";
 
 //The main component that is displayed to the user
@@ -56,8 +55,7 @@ class Orders extends Component {
     render() {
         return (
             <>
-                {/* <RestaurantNav /> */}
-                <NavBar />
+                <RestaurantNav />
                 < div className="order-div" >
                     <h4>{this.state.pageTitle}<span className="order-badge badge bg-danger">{this.state.count}</span></h4>
                     <table className="table">

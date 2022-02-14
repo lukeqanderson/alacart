@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 class NavBar extends Component {
     state = {
-        cartCount: 0
+        cartCount: this.props.cartTotal
     }
     render() {
         return (
@@ -20,7 +20,7 @@ class NavBar extends Component {
                         <ul className="navbar-nav me-auto mb-2 mb-lg-0">
                             {/* nav links */}
                             <li className="nav-item">
-                                <Link className="nav-link active" to="/">Home</Link>
+                                <Link className="nav-link active" to="/home">Home</Link>
                             </li>
                             <li className="nav-item">
                                 <Link className="nav-link active" to="/menu">Menu</Link>
@@ -31,12 +31,6 @@ class NavBar extends Component {
                                     <span className="cart-badge badge bg-danger">{this.state.cartCount}</span>
                                 </Link>
                             </li>
-                            {/* REMOVE ON LOGIN VALIDATION */}
-                            <li className="nav-item">
-                                <Link className="nav-link active" to="/orders">Orders
-
-                                </Link>
-                            </li>
                             <li className="nav-item">
                                 <Link className="nav-link active" to="/checkout">Checkout</Link>
                             </li>
@@ -45,11 +39,6 @@ class NavBar extends Component {
                 </div>
             </nav>
         )
-    }
-
-    // method to set the state of the cart count
-    changeCartCount = (count) => {
-        this.setState({ cartCount: this.state.cartCount + count })
     }
 }
 
