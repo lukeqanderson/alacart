@@ -90,7 +90,7 @@ class MenuItem extends Component {
                                 </div>
                             );
                         })}
-                        <button type="submit" className="add-to-cart-btn btn btn-primary" onClick={this.addItems}>Add to Cart</button>
+                        <button type="button" className="add-to-cart-btn btn btn-primary" onClick={this.addItems}>Add to Cart</button>
                     </form>
                 </div >
             </div >
@@ -115,6 +115,17 @@ class MenuItem extends Component {
         this.setState({
             cartItem: this.state.cartItem.concat(event.target.value.substr(0, event.target.value.indexOf(",")))
         })
+    }
+
+    // generate unique id using returned date in miliseconds
+    generateUniqueId = () => {
+        // sets state to unique id
+        this.setState({
+            toCart: {
+                ...this.state.toCart,
+                id: Date.now
+            }
+        }, this.sendItems)
     }
 
     // method to update size state in toCart on change
@@ -177,24 +188,41 @@ class MenuItem extends Component {
         //multiplies for quantity
         updatedPrice *= this.state.toCart.quantity;
 
+        // rounds price to 2 decimals
+        updatedPrice = updatedPrice.toFixed(2);
+
         this.setState({
             toCart: {
                 ...this.state.toCart,
                 price: updatedPrice
             }
-        }, this.sendItems)
+        }, this.generateUniqueId)
+    }
+
+    // method to reset price
+    resetPrice = () => {
+        const originalPrice = this.state.item.price
+        this.setState({
+            toCart: {
+                ...this.state.toCart,
+                price: originalPrice
+            }
+        })
     }
 
     //method to send items to database
     sendItems = () => {
-        //converts cart state to json string
-        const sendToCart = JSON.stringify(this.state.toCart);
 
-        //send object to cart database via XML     
-        const xhr = new XMLHttpRequest();
-        xhr.open("POST", "http://localhost:5000/Cart");
-        xhr.setRequestHeader("Content-Type", "application/json");
-        xhr.send(sendToCart);
+        fetch('http://localhost:5000/Cart', {
+            method: 'POST',
+            headers: {
+                'Accepts': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(this.state.toCart)
+        })
+        // resets price for adding future items
+        this.resetPrice();
     }
 
     // method to add items to state

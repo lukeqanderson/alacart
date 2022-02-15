@@ -4,7 +4,6 @@ import Home from "./Home";
 import Orders from "./Orders";
 import Cart from "./Cart";
 import Menu from "./Menu";
-import NoPage from "./noPage.jsx";
 // for routing
 import { Route, Routes } from "react-router-dom";
 
@@ -76,12 +75,11 @@ class Login extends Component {
             // routes pages for customer
             return (
                 <Routes>
-                    <Route path="/" exact element={<Home />} />
                     <Route path="/menu" exact element={<Menu />} />
                     <Route path="/cart" exact element={<Cart />} />
                     <Route path="/home" exact element={<Home />} />
                     {/* for 404 errors */}
-                    <Route path="*" element={<NoPage />} />
+                    <Route path="*" element={<Home />} />
                 </Routes>
             )
         }
@@ -89,7 +87,7 @@ class Login extends Component {
             return (
                 // routes orders page for restaurant
                 <Routes>
-                    <Route path="/" element={<Orders />} />
+                    <Route path="*" element={<Orders />} />
                 </Routes>
             )
         }
