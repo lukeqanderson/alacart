@@ -18,8 +18,10 @@ class MenuItem extends Component {
             toppings: [],
             price: this.props.item.price,
             quantity: 0,
+            notes: ""
         },
-        cartItem: []
+        cartItem: [],
+        message: "Item added to cart!"
     };
 
     render() {
@@ -90,6 +92,10 @@ class MenuItem extends Component {
                                 </div>
                             );
                         })}
+                        <div class="mb-3">
+                            <label htmlFor="notes" className="form-label">Notes</label>
+                            <textarea className="form-control" onChange={this.updateNotes} rows="3"></textarea>
+                        </div>
                         <button type="button" className="add-to-cart-btn btn btn-primary" onClick={this.addItems}>Add to Cart</button>
                     </form>
                 </div >
@@ -104,6 +110,19 @@ class MenuItem extends Component {
                 toCart: {
                     ...this.state.toCart,
                     quantity: event.target.value
+                }
+            }
+        )
+    }
+
+    // method to update notes on change
+    updateNotes = (event) => {
+        // add toppings name to the state
+        this.setState(
+            {
+                toCart: {
+                    ...this.state.toCart,
+                    notes: event.target.value
                 }
             }
         )
@@ -165,51 +184,6 @@ class MenuItem extends Component {
         }
     }
 
-    //method to update price in state
-    updatePrice = () => {
-        // sets updated price to new price
-        let updatedPrice = this.state.toCart.price;
-
-
-        // sets updates price of size by targeting last character of string
-        updatedPrice = updatedPrice + parseInt(this.state.toCart.size.slice(-1));
-
-        // for loop to go through item and add topping prices
-        for (let i = 0; i < this.state.item.toppings.length; i++) {
-            // for loop to go through toppings chosen
-            for (let u = 0; u < this.state.toCart.toppings.length; u++) {
-                // if statement to check for corrent toppings
-                if (this.state.item.toppings[i][0] === this.state.toCart.toppings[u]) {
-                    updatedPrice += this.state.item.toppings[i][2];
-                }
-            }
-        }
-
-        //multiplies for quantity
-        updatedPrice *= this.state.toCart.quantity;
-
-        // rounds price to 2 decimals
-        updatedPrice = updatedPrice.toFixed(2);
-
-        this.setState({
-            toCart: {
-                ...this.state.toCart,
-                price: updatedPrice
-            }
-        }, this.generateUniqueId)
-    }
-
-    // method to reset price
-    resetPrice = () => {
-        const originalPrice = this.state.item.price
-        this.setState({
-            toCart: {
-                ...this.state.toCart,
-                price: originalPrice
-            }
-        })
-    }
-
     //method to send items to database
     sendItems = () => {
 
@@ -221,19 +195,27 @@ class MenuItem extends Component {
             },
             body: JSON.stringify(this.state.toCart)
         })
-        // resets price for adding future items
-        this.resetPrice();
     }
 
     // method to add items to state
     addItems = () => {
-        let newToppings = this.returnSelectedToppings();
-        this.setState({
-            toCart: {
-                ...this.state.toCart,
-                toppings: newToppings
-            }
-        }, this.updatePrice)
+        // checks for quantity of 0
+        if (parseInt(this.state.toCart.quantity) === 0) {
+            alert("Quantity must be at least 1. Please adjust quantity and try again.");
+        }
+        // checks for no size selected
+        else if (this.state.toCart.size === "") {
+            alert("Please select a size to add item to cart.")
+        }
+        else {
+            let newToppings = this.returnSelectedToppings();
+            this.setState({
+                toCart: {
+                    ...this.state.toCart,
+                    toppings: newToppings
+                }
+            }, this.generateUniqueId)
+        }
     }
 
 }

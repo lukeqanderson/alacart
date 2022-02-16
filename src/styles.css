@@ -94,6 +94,21 @@
 .size-select {
     margin-bottom: 20px;
 }
+.success-message {
+    margin-top: 20px;
+    -webkit-animation: fadeinout 1s linear forwards;
+    animation: fadeinout 1s linear forwards;
+}
+
+@-webkit-keyframes fadeinout {
+  0%,100% { opacity: 0; }
+  50% { opacity: 1; }
+}
+
+@keyframes fadeinout {
+  0%,100% { opacity: 0; }
+  50% { opacity: 1; }
+}
 
 /* login component */
 .login-div {
@@ -106,8 +121,9 @@
     margin-bottom: 15px;
 }
 
-/* error component */
-.error-div {
-    margin-top:20px;
-    margin-left: 20px;
+/* checkout component */
+.checkout-div {
+    width: 50vw;
+    margin-left: 25vw;
+    margin-top: 50px;
 }

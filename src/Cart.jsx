@@ -1,21 +1,14 @@
 import { Component } from "react";
 import CartItem from "./CartItem";
 import NavBar from "./Nav";
+import { Link } from "react-router-dom";
 
 class Cart extends Component {
     //Creates the menu as part of the state in base for (no add-ons)
     state = {
         menu: [],
-        cartTotal: 0
-    }
-
-
-    // method to delete item from the list
-    deleteItem = (index) => {
-        // removes item
-        this.state.menu.splice(index, 1);
-        //resets the state
-        this.setState({ menu: this.state.menu });
+        priceTotal: 0,
+        fees: 0
     }
 
     render() {
@@ -58,14 +51,93 @@ class Cart extends Component {
                             <h1>Total: ${this.calculateTotalPrice(this.state.menu)}</h1>
                         </div>
                         <div className="checkout-div">
-                            <button className="pickup-btn btn btn-primary">Order Pick-up (free)</button>
-                            <button className="delivery-btn btn btn-primary">Order Delivery (+ $8.00)</button>
+                            <Link className="nav-link active" to="/checkout"><button className="pickup-btn btn btn-primary" onClick={this.forPickup}>Order Pick-up (free)</button></Link>
+                            <Link className="nav-link active" to="/checkout"><button className="delivery-btn btn btn-primary" onClick={this.forDelivery}>Order Delivery (+ $8.00)</button></Link>
                         </div>
-                        <h1>{this.state.cartTotal}</h1>
                     </div>
                 </>
             )
         }
+    }
+
+    // send to checkout db
+    sendToCheckout = () => {
+        fetch(`http://localhost:5000/Checkout`, {
+            method: 'POST',
+            headers: {
+                'Accepts': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(this.state)
+        })
+        // resets fees and total price
+        this.setState({
+            fees: 0
+        })
+        this.setState({
+            priceTotal: 0
+        })
+    }
+
+    // method to add fees
+    addFees = (fees) => {
+        this.setState({
+            fees: fees
+        }, this.addTotalPrice)
+    }
+
+    //method to add total price
+    addTotalPrice = () => {
+        this.setState({
+            priceTotal: this.calculateTotalPrice(this.state.menu)
+        }, this.sendToCheckout)
+    }
+
+    // method to update price for pickup
+    forPickup = () => {
+        this.addTotalPrice();
+    }
+
+    // method to update price for delivery
+    forDelivery = () => {
+        this.addFees(8);
+    }
+
+    // deletes items in database
+    deleteItemDB = (id) => {
+        fetch(`http://localhost:5000/Cart/${id}`,
+            { method: "DELETE" }
+        )
+    }
+
+    // updates an item in the database by deleting then resending state
+    updateItemDB = (id) => {
+        this.deleteItemDB(id);
+        // finds index with matching id
+        let index = 0;
+        for (let i = 0; i < this.state.menu.length; i++) {
+            if (id === this.state.menu[i].id) {
+                index = i;
+            }
+        }
+        fetch(`http://localhost:5000/Cart`, {
+            method: 'POST',
+            headers: {
+                'Accepts': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(this.state.menu[index])
+        })
+    }
+
+    // method to delete item from the list
+    deleteItem = (index) => {
+        // deletes database
+        this.deleteItemDB(this.state.menu[index].id);
+        // removes item
+        this.state.menu.splice(index, 1);
+        //resets the state
+        this.setState({ menu: this.state.menu });
     }
 
     // method to increase quantity
@@ -78,10 +150,9 @@ class Cart extends Component {
             let index = menu.indexOf(item);
             // increments new array at index
             menu[index].quantity++;
-            // updates to state
-            this.setState({ menu: menu })
+            // updates to state and db
+            this.setState({ menu: menu }, this.updateItemDB(this.state.menu[index].id))
         }
-        this.calculateCartTotal();
     }
 
     // method to decrease quantity
@@ -95,9 +166,8 @@ class Cart extends Component {
             // decrements new array at index
             menu[index].quantity--;
             // updates to state
-            this.setState({ menu: menu })
+            this.setState({ menu: menu }, this.updateItemDB(this.state.menu[index].id))
         }
-        this.calculateCartTotal();
     }
 
     // method to calculate total price
@@ -107,34 +177,17 @@ class Cart extends Component {
         for (let i = 0; i < menu.length; i++) {
             totalPrice += menu[i].price * menu[i].quantity;
         }
-        // returns rounded to 2 decimal places
         return totalPrice.toFixed(2);
     }
 
     // to pull data from database to state
     componentWillMount = async () => {
         // get request from database server
-        let response = await fetch(" http://localhost:5000/Cart", { method: "GET" })
+        let response = await fetch("http://localhost:5000/Cart", { method: "GET" })
         // converts the json data to js array
         let menu = await response.json();
         // sets the state to fetched values
         this.setState({ menu: menu });
-        // calculates the cart total
-        this.calculateCartTotal();
-    }
-
-    // method to calculate amount of items in cart
-    calculateCartTotal = () => {
-        let total = 0;
-        // goes through each item in the menu state to calculate total
-        for (let i = 0; i < this.state.menu.length; i++) {
-            total += parseInt(this.state.menu[i].quantity);
-        }
-
-        // sets state to cart total
-        this.setState({
-            cartTotal: total
-        })
     }
 }
 

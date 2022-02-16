@@ -4,6 +4,7 @@ import Home from "./Home";
 import Orders from "./Orders";
 import Cart from "./Cart";
 import Menu from "./Menu";
+import Checkout from "./Checkout";
 // for routing
 import { Route, Routes } from "react-router-dom";
 
@@ -78,6 +79,7 @@ class Login extends Component {
                     <Route path="/menu" exact element={<Menu />} />
                     <Route path="/cart" exact element={<Cart />} />
                     <Route path="/home" exact element={<Home />} />
+                    <Route path="/checkout" exact element={<Checkout />} />
                     {/* for 404 errors */}
                     <Route path="*" element={<Home />} />
                 </Routes>
