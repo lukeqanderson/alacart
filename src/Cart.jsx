@@ -6,9 +6,7 @@ import { Link } from "react-router-dom";
 class Cart extends Component {
     //Creates the menu as part of the state in base for (no add-ons)
     state = {
-        menu: [],
-        priceTotal: 0,
-        fees: 0
+        menu: []
     }
 
     render() {
@@ -51,8 +49,7 @@ class Cart extends Component {
                             <h1>Total: ${this.calculateTotalPrice(this.state.menu)}</h1>
                         </div>
                         <div className="checkout-div">
-                            <Link className="nav-link active" to="/checkout"><button className="pickup-btn btn btn-primary" onClick={this.forPickup}>Order Pick-up (free)</button></Link>
-                            <Link className="nav-link active" to="/checkout"><button className="delivery-btn btn btn-primary" onClick={this.forDelivery}>Order Delivery (+ $8.00)</button></Link>
+                            <Link className="nav-link active" to="/checkout" onClick={this.sendToCheckout}><button className="pickup-btn btn btn-primary" >Checkout</button></Link>
                         </div>
                     </div>
                 </>
@@ -70,37 +67,6 @@ class Cart extends Component {
             },
             body: JSON.stringify(this.state)
         })
-        // resets fees and total price
-        this.setState({
-            fees: 0
-        })
-        this.setState({
-            priceTotal: 0
-        })
-    }
-
-    // method to add fees
-    addFees = (fees) => {
-        this.setState({
-            fees: fees
-        }, this.addTotalPrice)
-    }
-
-    //method to add total price
-    addTotalPrice = () => {
-        this.setState({
-            priceTotal: this.calculateTotalPrice(this.state.menu)
-        }, this.sendToCheckout)
-    }
-
-    // method to update price for pickup
-    forPickup = () => {
-        this.addTotalPrice();
-    }
-
-    // method to update price for delivery
-    forDelivery = () => {
-        this.addFees(8);
     }
 
     // deletes items in database
