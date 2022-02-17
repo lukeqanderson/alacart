@@ -127,3 +127,20 @@
     margin-left: 25vw;
     margin-top: 50px;
 }
+.price-table {
+    text-align: left;
+}
+.price-data {
+    padding-left: 50px;
+}
+.order-details {
+    text-align: left;
+    margin-top: 50px;
+    margin-bottom: 50px;
+}
+.item-table-item {
+    padding-left: 20px;
+}
+.options-text {
+    margin-top: 20px;
+}

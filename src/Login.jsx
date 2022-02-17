@@ -5,6 +5,7 @@ import Orders from "./Orders";
 import Cart from "./Cart";
 import Menu from "./Menu";
 import Checkout from "./Checkout";
+import CheckoutForm from "./CheckoutForm";
 // for routing
 import { Route, Routes } from "react-router-dom";
 
@@ -80,6 +81,7 @@ class Login extends Component {
                     <Route path="/cart" exact element={<Cart />} />
                     <Route path="/home" exact element={<Home />} />
                     <Route path="/checkout" exact element={<Checkout />} />
+                    <Route path="/checkoutform" extact element={<CheckoutForm />} />
                     {/* for 404 errors */}
                     <Route path="*" element={<Home />} />
                 </Routes>

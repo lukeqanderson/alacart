@@ -6,7 +6,8 @@ import { Link } from "react-router-dom";
 class Cart extends Component {
     //Creates the menu as part of the state in base for (no add-ons)
     state = {
-        menu: []
+        menu: [],
+        totalCost: 0
     }
 
     render() {
@@ -49,24 +50,12 @@ class Cart extends Component {
                             <h1>Total: ${this.calculateTotalPrice(this.state.menu)}</h1>
                         </div>
                         <div className="checkout-div">
-                            <Link className="nav-link active" to="/checkout" onClick={this.sendToCheckout}><button className="pickup-btn btn btn-primary" >Checkout</button></Link>
+                            <Link className="nav-link active" to="/checkout"><button className="pickup-btn btn btn-primary" >Checkout</button></Link>
                         </div>
                     </div>
                 </>
             )
         }
-    }
-
-    // send to checkout db
-    sendToCheckout = () => {
-        fetch(`http://localhost:5000/Checkout`, {
-            method: 'POST',
-            headers: {
-                'Accepts': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(this.state)
-        })
     }
 
     // deletes items in database
