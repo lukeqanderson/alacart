@@ -92,7 +92,7 @@ class MenuItem extends Component {
                                 </div>
                             );
                         })}
-                        <div class="mb-3">
+                        <div className="mb-3">
                             <label htmlFor="notes" className="form-label">Notes</label>
                             <textarea className="form-control" onChange={this.updateNotes} rows="3"></textarea>
                         </div>

@@ -31,6 +31,12 @@ class NavBar extends Component {
                                     <span className="cart-badge badge bg-danger">{this.state.cartCount}</span>
                                 </Link>
                             </li>
+                            <li className="nav-item">
+                                <Link className="nav-link active" to="/checkout">Checkout
+                                    {/* renders number of items in cart */}
+                                    <span className="cart-badge badge bg-danger">{this.state.cartCount}</span>
+                                </Link>
+                            </li>
                         </ul>
                     </div>
                 </div>

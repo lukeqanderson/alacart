@@ -6,6 +6,7 @@ import Cart from "./Cart";
 import Menu from "./Menu";
 import Checkout from "./Checkout";
 import CheckoutForm from "./CheckoutForm";
+import Success from "./success";
 // for routing
 import { Route, Routes } from "react-router-dom";
 
@@ -81,7 +82,8 @@ class Login extends Component {
                     <Route path="/cart" exact element={<Cart />} />
                     <Route path="/home" exact element={<Home />} />
                     <Route path="/checkout" exact element={<Checkout />} />
-                    <Route path="/checkoutform" extact element={<CheckoutForm />} />
+                    <Route path="/checkoutform" exact element={<CheckoutForm />} />
+                    <Route path="/success" exact element={<Success />} />
                     {/* for 404 errors */}
                     <Route path="*" element={<Home />} />
                 </Routes>

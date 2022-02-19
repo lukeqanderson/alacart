@@ -1,7 +1,7 @@
 import { data } from "jquery";
 import { Component } from "react";
 import { Link } from "react-router-dom";
-import NavCheckout from "./NavCheckout";
+import NavBar from "./Nav";
 
 
 class Checkout extends Component {
@@ -18,44 +18,48 @@ class Checkout extends Component {
     render() {
         return (
             <div className="order-review-div">
-                <NavCheckout />
+                <NavBar />
                 <div className="checkout-div">
                     <h4>Your Order</h4>
                     <table className="order-details">
-                        <tr>
-                            <th><strong>Name</strong></th>
-                            <th className="item-table-item"><strong>Size</strong></th>
-                            <th className="item-table-item"><strong>Add-ons</strong></th>
-                            <th className="item-table-item"><strong>Notes</strong></th>
-                            <th className="item-table-item"><strong>Quantity</strong></th>
-                            <th className="item-table-item"><strong>Price</strong></th>
-                        </tr>
-                        {this.state.fromCart.map((item) => {
-                            return (this.generateFoodRow(item))
-                        })}
+                        <tbody>
+                            <tr>
+                                <th><strong>Name</strong></th>
+                                <th className="item-table-item"><strong>Size</strong></th>
+                                <th className="item-table-item"><strong>Add-ons</strong></th>
+                                <th className="item-table-item"><strong>Notes</strong></th>
+                                <th className="item-table-item"><strong>Quantity</strong></th>
+                                <th className="item-table-item"><strong>Price</strong></th>
+                            </tr>
+                            {this.state.fromCart.map((item) => {
+                                return (this.generateFoodRow(item))
+                            })}
+                        </tbody>
                     </table>
                     <table className="price-table">
-                        <tr>
-                            <td><h5>Order Price:</h5></td>
-                            <td className="price-data"><h5>${this.calculateTotalPrice(this.state.fromCart)}</h5></td>
+                        <tbody>
+                            <tr>
+                                <td><h5>Order Price:</h5></td>
+                                <td className="price-data"><h5>${this.calculateTotalPrice(this.state.fromCart)}</h5></td>
 
-                        </tr>
-                        <tr>
-                            <td><h5>+ Fees:</h5></td>
-                            <td className="price-data"><h5>${this.state.fees}</h5></td>
-                        </tr>
-                        <tr>
-                            <td><h5><strong>Total Price:</strong></h5></td>
-                            <td className="price-data"><h5><strong>${this.increaseTotalPrice(this.state.fees)}</strong></h5></td>
-                        </tr>
+                            </tr>
+                            <tr>
+                                <td><h5>+ Fees:</h5></td>
+                                <td className="price-data"><h5>${this.state.fees}</h5></td>
+                            </tr>
+                            <tr>
+                                <td><h5><strong>Total Price:</strong></h5></td>
+                                <td className="price-data"><h5><strong>${this.increaseTotalPrice(this.state.fees)}</strong></h5></td>
+                            </tr>
+                        </tbody>
                     </table>
                     <p className="options-text">Please select either pick-up or deliver below</p>
                     <button className={"pickup-btn " + this.state.buttonStylePickup} onClick={this.orderPickup}>Pick-up</button>
                     <button className={"delivery-btn " + this.state.buttonStyleDelivery} onClick={this.orderDelivery}>Delivery + $8</button>
                     <p className="options-text">Please review your order carefully. To make any changes click the "Cart" button to go back.</p>
                     <p className="options-text">Otherwise, hit "Continue" to proceed to payment.</p>
-                    <Link className="btn" to="/cart" onClick={this.deleteCheckout}><button class="btn btn-danger" type="button">Cart</button></Link>
-                    <Link className="btn" to={this.state.checkoutLink} onClick={this.sendCheckout}><button class="btn btn-primary" type="button">Continue</button></Link>
+                    <Link className="btn" to="/cart" onClick={this.deleteCheckout}><button className="btn btn-danger" type="button">Cart</button></Link>
+                    <Link className="btn" to={this.state.checkoutLink} onClick={this.sendCheckout}><button className="btn btn-primary" type="button">Continue</button></Link>
                 </div>
             </div >
         );
