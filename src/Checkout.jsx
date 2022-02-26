@@ -156,14 +156,14 @@ class Checkout extends Component {
                 </td>
                 <td className="item-table-item">{item.notes}</td>
                 <td className="item-table-item">{item.quantity}</td>
-                <td className="item-table-item">${parseFloat(item.price) * item.quantity}</td>
+                <td className="item-table-item">${(parseFloat(item.price) * item.quantity).toFixed(2)}</td>
             </tr >
         )
     }
 
     // increase total price
     increaseTotalPrice = (amt) => {
-        return this.state.totalPrice + amt;
+        return (this.state.totalPrice + amt);
     }
 
 

@@ -7,8 +7,12 @@ import Menu from "./Menu";
 import Checkout from "./Checkout";
 import CheckoutForm from "./CheckoutForm";
 import Success from "./success";
+import { loadStripe } from "@stripe/stripe-js";
+import { Elements } from "@stripe/react-stripe-js"
 // for routing
 import { Route, Routes } from "react-router-dom";
+
+const stripePromise = loadStripe("pk_test_51KTfEKGcuciBY4Okf6HKLykrigDKlBErDt09UasA4Wm6THkHcRM82hgSHVm7u9U54UHEJH2DCP5fPV1UmKlduAmv00yLCdXCmc")
 
 class Login extends Component {
     // sets state of login fields
@@ -82,7 +86,8 @@ class Login extends Component {
                     <Route path="/cart" exact element={<Cart />} />
                     <Route path="/home" exact element={<Home />} />
                     <Route path="/checkout" exact element={<Checkout />} />
-                    <Route path="/checkoutform" exact element={<CheckoutForm />} />
+                    <Route path="/checkoutform" exact element={<Elements stripe={stripePromise}><CheckoutForm /></Elements>} />
+
                     <Route path="/success" exact element={<Success />} />
                     {/* for 404 errors */}
                     <Route path="*" element={<Home />} />

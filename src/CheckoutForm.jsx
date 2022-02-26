@@ -1,6 +1,7 @@
 import { Component } from "react";
 import NavBar from "./Nav";
 import { Link } from "react-router-dom";
+import StripeCheckout from "react-stripe-checkout";
 
 class CheckoutForm extends Component {
     state = {
@@ -86,7 +87,17 @@ class CheckoutForm extends Component {
                             </div>
                         </div>
                         <div className="col-12">
-                            <Link className="btn nav-link active" to="/stripeInfo"><button className="btn btn-primary" type="submit" onClick={this.pay}>Payment</button></Link>
+                            <StripeCheckout
+                                onClick={this.checkForm}
+                                stripeKey={process.env.REACT_APP_PUBLIC_KEY}
+                                token={this.makePayment}
+                                name="Payment"
+                                amount={this.totalPrice * 100}
+                            >
+                                <button
+                                    className="btn btn-primary"
+                                    type="submit">Pay with Card</button>
+                            </StripeCheckout>
                             <Link className="btn nav-link active" to="/cart" onClick={this.deleteCheckout}><button className="btn btn-danger" type="button">Return to Cart</button></Link>
                         </div>
                     </form>
@@ -94,6 +105,11 @@ class CheckoutForm extends Component {
             </>
         )
     }
+    //method to check form and make sure all information is filled out
+    checkForm = () => {
+
+    }
+
     // to set first name
     setFName = (event) => {
         this.setState({
@@ -127,6 +143,29 @@ class CheckoutForm extends Component {
         this.setState({
             phone: event.target.value
         })
+    }
+
+    // to create token
+    makePayment = token => {
+        const body = {
+            token,
+            price: this.state.totalPrice
+        }
+        const headers = {
+            "Content-Type": "application/json"
+        }
+
+        // makes request to the backend
+        return fetch(`http://localhost:8000/payment`, {
+            method: "POST",
+            headers,
+            body: JSON.stringify(body)
+        }).then(res => {
+            console.log(res)
+            const { status } = res
+            console.log(status)
+        })
+            .catch(error => console.log(error))
     }
 
     formOnDelivery = () => {
