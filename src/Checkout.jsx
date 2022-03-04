@@ -1,7 +1,7 @@
-import { data } from "jquery";
 import { Component } from "react";
 import { Link } from "react-router-dom";
 import NavBar from "./Nav";
+import { DateTime } from "luxon";
 
 
 class Checkout extends Component {
@@ -13,7 +13,8 @@ class Checkout extends Component {
         buttonStylePickup: "btn btn-secondary",
         buttonStyleDelivery: "btn btn-secondary",
         checkoutLink: "/checkout",
-        checkBug: null
+        checkBug: null,
+        currentTimeHours: null
     }
     render() {
         return (
@@ -53,16 +54,74 @@ class Checkout extends Component {
                             </tr>
                         </tbody>
                     </table>
+                    {this.openOptions()}
+                </div>
+            </div >
+        );
+    }
+
+    // method to check current time and return how many minutes it will for order
+    orderTime = () => {
+        if (this.state.orderOption === false) {
+            return (
+                <></>
+            )
+        }
+        else if ((this.state.currentTimeHours >= 12 & this.state.currentTimeHours < 14) | (this.state.currentTimeHours >= 18 & this.state.currentTimeHours < 20)) {
+            if (this.state.fees === 0) {
+                return (
+                    <h4><strong>Your pick-up order will be ready in about 40 minutes.</strong></h4>
+                )
+            }
+            else {
+                return (
+                    <h4><strong>Your order will be delivered in about 1 hour.</strong></h4>
+                )
+            }
+        }
+        else {
+            if (this.state.fees === 0) {
+                return (
+                    <h4><strong>Your pick-up order will be ready in about 20 minutes.</strong></h4>
+                )
+            }
+            else {
+                return (
+                    <h4><strong>Your order will be delivered in about 40 minutes.</strong></h4>
+                )
+            }
+        }
+    }
+
+    // method to return checkout options if the restaurant is open or closed
+    openOptions = () => {
+        // returns options for open
+        if (this.state.currentTimeHours >= 0 & this.state.currentTimeHours < 24) {
+            return (
+                <>
                     <p className="options-text">Please select either pick-up or deliver below</p>
                     <button className={"pickup-btn " + this.state.buttonStylePickup} onClick={this.orderPickup}>Pick-up</button>
                     <button className={"delivery-btn " + this.state.buttonStyleDelivery} onClick={this.orderDelivery}>Delivery + $8</button>
+                    <br></br>
+                    <br></br>
+                    {this.orderTime()}
                     <p className="options-text">Please review your order carefully. To make any changes click the "Cart" button to go back.</p>
                     <p className="options-text">Otherwise, hit "Continue" to proceed to payment.</p>
                     <Link className="btn" to="/cart" onClick={this.deleteCheckout}><button className="btn btn-danger" type="button">Cart</button></Link>
                     <Link className="btn" to={this.state.checkoutLink} onClick={this.sendCheckout}><button className="btn btn-primary" type="button">Continue</button></Link>
-                </div>
-            </div >
-        );
+                </>
+            )
+        }
+        else {
+            return (
+                <>
+                    <h4><br></br><strong>The restaurnt is currently Closed</strong>
+                        <br></br><br></br>Items can only be purchased between the hours of 11:00AM and 9:00PM Pacific Standard Time.
+                        <br></br><br></br></h4>
+                    <Link className="btn" to="/cart" onClick={this.deleteCheckout}><button className="btn btn-danger" type="button">Cart</button></Link>
+                </>
+            )
+        }
     }
 
     // method to send info to checkout db
@@ -204,7 +263,7 @@ class Checkout extends Component {
             let i = this.state.checkBug.length - 1;
             let bugData = this.state.checkBug;
             // while loop to check for additional data
-            while (bugData | bugData[i] != undefined) {
+            while (bugData | bugData[i] !== undefined) {
                 let id = bugData[i].id;
                 // deletes the data
                 fetch(`http://localhost:5000/Checkout/${id}`,
@@ -213,6 +272,16 @@ class Checkout extends Component {
                 i--;
             }
         }, 500)
+    }
+
+    // method to set current time
+    setTime = () => {
+        // gets US Pacific time
+        const zone = "America/Los_Angeles"
+        const time = DateTime.now().setZone(zone).hour;
+        this.setState({
+            currentTimeHours: time
+        })
     }
 
     // checks to see if component mounts then make HTTP requests
@@ -228,6 +297,8 @@ class Checkout extends Component {
         this.setState({
             totalPrice: this.calculateTotalPrice(fromCart)
         })
+        // sets current time
+        this.setTime();
     }
 };
 

@@ -37,11 +37,31 @@ class NavBar extends Component {
                                     <span className="cart-badge badge bg-danger">{this.state.cartCount}</span>
                                 </Link>
                             </li>
+                            <li className="nav-item">
+                                <Link className="nav-link active" onClick={this.logOutCustomer} to="/">Log Out</Link>
+                            </li>
                         </ul>
                     </div>
                 </div>
             </nav>
         )
+    }
+
+    // method to update database for customer logout
+    logOutCustomer = () => {
+        fetch(`http://localhost:5000/Users/1`,
+            {
+                method: "PATCH",
+                body: JSON.stringify({
+                    "isLoggedIn": false
+                }),
+                headers: { 'Content-Type': 'application/json; charset=UTF-8' },
+            }
+        )
+        // reloads page to logout
+        setTimeout(() => {
+            window.location.reload(false);
+        }, 100)
     }
 }
 

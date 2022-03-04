@@ -24,7 +24,7 @@ app.post("/payment", (req, res) => {
         source: token.id
     }).then(customer => {
         stripe.charges.create({
-            amount: price * 100,
+            amount: parseInt((price * 100).toFixed(2)),
             currency: 'usd',
             customer: customer.id,
             receipt_email: token.email

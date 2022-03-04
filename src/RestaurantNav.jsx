@@ -1,4 +1,5 @@
 //the navbar for restaurant with link to Order component
+import { Link } from "react-router-dom";
 import { Component } from "react";
 
 class RestaurantNav extends Component {
@@ -22,11 +23,31 @@ class RestaurantNav extends Component {
                             <li className="nav-item">
                                 <a className="nav-link active" aria-current="page" href="/Orders">Orders</a>
                             </li>
+                            <li className="nav-item">
+                                <Link className="nav-link active" to="/" onClick={this.logOutRestaurant}>Log Out</Link>
+                            </li>
                         </ul>
                     </div>
                 </div>
             </nav>
         )
+    }
+
+    // method to update database for restaurant logout
+    logOutRestaurant = () => {
+        fetch(`http://localhost:5000/Users/2`,
+            {
+                method: "PATCH",
+                body: JSON.stringify({
+                    "isLoggedIn": false
+                }),
+                headers: { 'Content-Type': 'application/json; charset=UTF-8' },
+            }
+        )
+        // reloads page to logout
+        setTimeout(() => {
+            window.location.reload(false);
+        }, 100)
     }
 }
 

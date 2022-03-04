@@ -6,13 +6,13 @@ import Cart from "./Cart";
 import Menu from "./Menu";
 import Checkout from "./Checkout";
 import CheckoutForm from "./CheckoutForm";
-import Success from "./success";
 import { loadStripe } from "@stripe/stripe-js";
-import { Elements } from "@stripe/react-stripe-js"
+import { Elements } from "@stripe/react-stripe-js";
 // for routing
 import { Route, Routes } from "react-router-dom";
+import { DateTime } from "luxon";
 
-const stripePromise = loadStripe("pk_test_51KTfEKGcuciBY4Okf6HKLykrigDKlBErDt09UasA4Wm6THkHcRM82hgSHVm7u9U54UHEJH2DCP5fPV1UmKlduAmv00yLCdXCmc")
+const stripePromise = loadStripe(process.env.REACT_APP_PUBLIC_KEY);
 
 class Login extends Component {
     // sets state of login fields
@@ -22,11 +22,15 @@ class Login extends Component {
         isRestaurant: false,
         validUsers: [],
         userValidCustomer: false,
-        userValidRestaurant: false
+        userValidRestaurant: false,
+        currentTimeHours: null,
+        isLoggedInCustomer: false,
+        isLoggedInRestaurant: false
     }
 
+
     render() {
-        if (this.state.userValidCustomer === false & this.state.userValidRestaurant === false) {
+        if (this.state.userValidCustomer === false & this.state.userValidRestaurant === false & this.state.isLoggedInCustomer === false & this.state.isLoggedInRestaurant === false) {
             return (
                 // renders login page for not authenticated
                 <>
@@ -78,7 +82,7 @@ class Login extends Component {
 
             )
         }
-        else if (this.state.userValidCustomer === true) {
+        else if (this.state.userValidCustomer === true | this.state.isLoggedInCustomer === true) {
             // routes pages for customer
             return (
                 <Routes>
@@ -86,10 +90,7 @@ class Login extends Component {
                     <Route path="/cart" exact element={<Cart />} />
                     <Route path="/home" exact element={<Home />} />
                     <Route path="/checkout" exact element={<Checkout />} />
-                    <Route path="/checkoutform" exact element={<Elements stripe={stripePromise}><CheckoutForm /></Elements>} />
-
-                    <Route path="/success" exact element={<Success />} />
-                    {/* for 404 errors */}
+                    {this.renderCheckoutForm()}
                     <Route path="*" element={<Home />} />
                 </Routes>
             )
@@ -104,6 +105,9 @@ class Login extends Component {
         }
     }
 
+    // 
+
+    // method to validate login
     login = () => {
         for (let i = 0; i < this.state.validUsers.length; i++) {
 
@@ -111,14 +115,61 @@ class Login extends Component {
             if (this.state.validUsers[i].password === this.state.password
                 & this.state.validUsers[i].email === this.state.email
                 & this.state.validUsers[i].isRestaurant === false) {
-                this.setState({ userValidCustomer: true })
+                this.setState({ userValidCustomer: true });
+                // updates database for logged in customer
+                fetch(`http://localhost:5000/Users/1`,
+                    {
+                        method: "PATCH",
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ "isLoggedIn": true })
+                    }
+                )
             }
             // checks credentials for restaurant
             else if (this.state.validUsers[i].password === this.state.password
                 & this.state.validUsers[i].email === this.state.email
                 & this.state.validUsers[i].isRestaurant === true) {
-                this.setState({ userValidRestaurant: true })
+                this.setState({ userValidRestaurant: true });
+                // updates database for logged in restaurant
+                fetch(`http://localhost:5000/Users/2`,
+                    {
+                        method: "PATCH",
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ "isLoggedIn": true })
+                    }
+                )
             }
+        }
+    }
+
+    // method to check for logged in user
+    checkLoggedIn = () => {
+        for (let i = 0; i < this.state.validUsers.length; i++) {
+            if (this.state.validUsers[i].isRestaurant === false & this.state.validUsers[i].isLoggedIn === true) {
+                this.setState({ isLoggedInCustomer: true })
+            }
+            else if (this.state.validUsers[i].isLoggedIn === true) {
+                this.setState({ isLoggedInRestaurant: true })
+            }
+        }
+    }
+
+    // method to set current time
+    setTime = () => {
+        // gets US Pacific time
+        const zone = "America/Los_Angeles"
+        const time = DateTime.now().setZone(zone).hour;
+        this.setState({
+            currentTimeHours: time
+        })
+    }
+
+    // method to render checkout form options on open time
+    renderCheckoutForm = () => {
+        if (this.state.currentTimeHours >= 0 & this.state.currentTimeHours < 24) {
+            return (
+                <Route path="/checkoutform" exact element={<Elements stripe={stripePromise}><CheckoutForm /></Elements>} />
+            )
         }
     }
 
@@ -130,6 +181,10 @@ class Login extends Component {
         let users = await response.json();
         // sets the state to fetched values
         this.setState({ validUsers: users });
+        // checks for logged in users
+        this.checkLoggedIn();
+        // sets current time
+        this.setTime();
     }
 }
 

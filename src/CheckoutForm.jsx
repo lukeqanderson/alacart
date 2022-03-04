@@ -2,6 +2,7 @@ import { Component } from "react";
 import NavBar from "./Nav";
 import { Link } from "react-router-dom";
 import StripeCheckout from "react-stripe-checkout";
+import { DateTime } from "luxon";
 
 class CheckoutForm extends Component {
     state = {
@@ -16,98 +17,160 @@ class CheckoutForm extends Component {
         city: "",
         USstate: "OR",
         zip: "",
-        time: null,
-        success: false
+        submitForm: null,
+        orderTime: null,
+        readyTime: null,
+        userOrderTime: null,
+        userReadyTime: null,
+        isReady: false
     }
 
     render() {
         return (
             <>
                 <NavBar />
-                <div className="checkout-div">
-                    <h4>Customer Details</h4>
-                    <br></br>
-                    <form className="row g-3 needs-validation" >
-                        <div className="col-md-4">
-                            <label className="form-label">First name</label>
-                            <input
-                                type="text"
-                                className="form-control"
-                                placeholder="John"
-                                onChange={this.setFName}
-                                required />
-                        </div>
-                        <div className="col-md-4">
-                            <label className="form-label">Middle name</label>
-                            <input
-                                type="text"
-                                className="form-control"
-                                placeholder="(optional)"
-                                onChange={this.setMName}
-                            />
-                        </div>
-                        <div className="col-md-4">
-                            <label className="form-label">Last name</label>
-                            <input
-                                type="text"
-                                className="form-control"
-                                placeholder="Doe"
-                                onChange={this.setLName}
-                                required />
-                        </div>
-                        <div className="col-md-12">
-                            <label className="form-label">Email address</label>
-                            <input
-                                type="email"
-                                className="form-control"
-                                placeholder="name@example.com"
-                                onChange={this.setEmail}
-                                required />
-                        </div>
-                        <div className="col-md-12">
-                            <label className="phone-input">Phone number:</label>
-                            <input
-                                className="form-control"
-                                placeholder="999-999-9999"
-                                type="tel"
-                                pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
-                                onChange={this.setPhone}
-                                required
-                            />
-                        </div>
-                        {this.formOnDelivery()}
-                        <div className="col-12">
-                            <div className="form-check">
-                                <input className="form-check-input" type="checkbox" required />
-                                <label className="form-check-label">
-                                    <span>I agree to allow A la Cart to charge my card for $</span>
-                                    <span>{this.state.totalPrice === 0 ? "loading..." : this.state.totalPrice}</span>
-                                </label>
-
+                {/* if statement to thank them for purchasing on empty state */}
+                {this.state.orderInfo ?
+                    <div>
+                        <h2 className="thanks-message">Thank You. Enjoy your meal!</h2>
+                        <Link className="btn nav-link active" to="/Menu"><button className="btn btn-primary" type="button">Return to Menu</button></Link>
+                    </div>
+                    : <div className="checkout-div">
+                        <h4>Customer Details</h4>
+                        <br></br>
+                        <form className="row g-3 needs-validation">
+                            <div className="col-md-4">
+                                <label className="form-label">First name</label>
+                                <input
+                                    type="text"
+                                    className="form-control"
+                                    placeholder="John"
+                                    onChange={this.setFName}
+                                    required />
                             </div>
-                        </div>
-                        <div className="col-12">
-                            <StripeCheckout
-                                onClick={this.checkForm}
-                                stripeKey={process.env.REACT_APP_PUBLIC_KEY}
-                                token={this.makePayment}
-                                name="Payment"
-                                amount={this.totalPrice * 100}
-                            >
-                                <button
-                                    className="btn btn-primary"
-                                    type="submit">Pay with Card</button>
-                            </StripeCheckout>
-                            <Link className="btn nav-link active" to="/cart" onClick={this.deleteCheckout}><button className="btn btn-danger" type="button">Return to Cart</button></Link>
-                        </div>
-                    </form>
-                </div>
+                            <div className="col-md-4">
+                                <label className="form-label">Middle name</label>
+                                <input
+                                    type="text"
+                                    className="form-control"
+                                    placeholder="(optional)"
+                                    onChange={this.setMName}
+                                />
+                            </div>
+                            <div className="col-md-4">
+                                <label className="form-label">Last name</label>
+                                <input
+                                    type="text"
+                                    className="form-control"
+                                    placeholder="Doe"
+                                    onChange={this.setLName}
+                                    required />
+                            </div>
+                            <div className="col-md-12">
+                                <label className="form-label">Email address</label>
+                                <input
+                                    type="email"
+                                    className="form-control"
+                                    placeholder="name@example.com"
+                                    onChange={this.setEmail}
+                                    required />
+                            </div>
+                            <div className="col-md-12">
+                                <label className="phone-input">Phone number:</label>
+                                <input
+                                    className="form-control"
+                                    placeholder="999-999-9999"
+                                    type="tel"
+                                    onChange={this.setPhone}
+                                    required
+                                />
+                            </div>
+                            {this.formOnDelivery()}
+                            <div className="col-12">
+                                <span>Do you agree to allow A la Cart to charge your card for $</span>
+                                <span>{this.state.totalPrice === 0 ? "loading..." : this.state.totalPrice}</span>
+                                <span>?</span>
+                            </div>
+                            <div className="col-12">
+                                {this.state.submitForm}
+                                <Link className="btn nav-link active" to="/cart" onClick={this.deleteCheckout}><button className="btn btn-danger" type="button">Return to Cart</button></Link>
+                            </div>
+                        </form>
+                    </div>}
             </>
         )
     }
-    //method to check form and make sure all information is filled out
-    checkForm = () => {
 
+    // method to validate form
+    validateForm = () => {
+        // if statements to validate form components
+        if (this.state.fName === "") {
+            alert("Please enter your first name")
+        }
+        else if (this.state.lName === "") {
+            alert("Please enter your last name")
+        }
+        else if (!(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/.test(this.state.email))) {
+            alert("Please enter a valid email in the format name@example.com")
+        }
+        else if (!(/^[+]?[(]?[0-9]{3}[)]?[-\s.]?[0-9]{3}[-\s.]?[0-9]{4,6}$/im.test(this.state.phone))) {
+            alert("Please enter your phone number in the format XXX-XXX-XXXX, (XXX) XXX-XXXX, or XXXXXXXXXX.\n\nPlease note that at this time we only accept US phone numbers.")
+        }
+        // to check for not loaded state
+        else if (this.state.totalPrice === null) {
+            alert("Please wait to total price to display before agreeing. If it fails to load please go back to cart and try again.")
+        }
+        // checks for delivery
+        else if (this.state.orderInfo[0].fees === 8) {
+            if (this.state.street === "") {
+                alert("Please enter your street address")
+            }
+            else if (this.state.city === "") {
+                alert("Please enter your city")
+            }
+            else if (this.state.city.toLowerCase() !== "la grande") {
+                alert("This restaurant is only available for delivery in La Grande, Oregon.\n\nPlease change you city to 'La Grande' or choose the pickup order option instead.")
+            }
+            else if (this.state.USstate !== "OR") {
+                alert("This restaurant is only available for delivery in La Grande, Oregon.\n\nPlease change your state to 'OR' or choose the pickup order option instead.")
+            }
+            else if (this.state.zip === "") {
+                alert("Please enter your zip")
+            }
+            else if (!(/^(\d{5})?$/.test(this.state.zip))) {
+                alert("Please enter 5 number for your zip in the form XXXXX.");
+            }
+            // checks for La Grande zipcodes
+            else if (this.state.zip !== "97850") {
+                alert("This restaurant only delivers to the zip '97850'.\n\nPlease check your zip or change order to the pickup option.")
+            }
+            this.setState({
+                submitForm: <StripeCheckout
+                    stripeKey={process.env.REACT_APP_PUBLIC_KEY}
+                    token={this.makePayment}
+                    name="Payment"
+                    amount={(this.state.totalPrice * 100).toFixed(2)}
+                >
+                    <button
+                        className="btn btn-success"
+                        type="button">Pay with Card</button>
+                </StripeCheckout>
+            })
+        }
+        else {
+            this.setState({
+                submitForm: <StripeCheckout
+                    stripeKey={process.env.REACT_APP_PUBLIC_KEY}
+                    token={this.makePayment}
+                    name="Payment"
+                    amount={(this.state.totalPrice * 100).toFixed(2)}
+                >
+                    <button
+                        className="btn btn-success"
+                        type="button">Pay with Card</button>
+                </StripeCheckout>
+            })
+        }
     }
 
     // to set first name
@@ -147,9 +210,17 @@ class CheckoutForm extends Component {
 
     // to create token
     makePayment = token => {
+        let pickUpOrDelivery = "";
+        if (this.state.orderInfo[0].fees === 8) {
+            pickUpOrDelivery = "delivered";
+        }
+        else {
+            pickUpOrDelivery = "ready for pickup"
+        }
+
         const body = {
             token,
-            price: this.state.totalPrice
+            price: this.state.totalPrice.toFixed(2)
         }
         const headers = {
             "Content-Type": "application/json"
@@ -160,14 +231,23 @@ class CheckoutForm extends Component {
             method: "POST",
             headers,
             body: JSON.stringify(body)
-        }).then(res => {
-            console.log(res)
-            const { status } = res
-            console.log(status)
         })
+            .then(this.setOrderTime())
+            .then(this.setReadyTime())
+            .then(this.sendToDB())
+            .then(this.deleteCart())
+            .then(fetch(`http://localhost:5000/Checkout/1`,
+                { method: "DELETE" }
+            ))
+            .then(
+                alert(`Payment Successful! \n\nWe have sent a confirmation email sent to ${this.state.email}.
+            \n\nYour order was placed at ${this.state.userOrderTime} and will be ${pickUpOrDelivery} at ${this.state.userReadyTime}. 
+            \n\nThank you for ordering with us!`))
+            .then(window.location.reload(false))
             .catch(error => console.log(error))
     }
 
+    // method to display required address for delivery
     formOnDelivery = () => {
         // to allow for state to be set
         if (this.state.orderInfo[0] === undefined) {
@@ -192,7 +272,7 @@ class CheckoutForm extends Component {
                         <input
                             type="text"
                             className="form-control"
-                            placeholder="Portland"
+                            placeholder="La Grande"
                             onChange={this.setCity}
                             required />
                     </div>
@@ -260,7 +340,7 @@ class CheckoutForm extends Component {
                         <label className="form-label">Zip</label>
                         <input
                             type="text"
-                            placeholder="99999"
+                            placeholder="97850"
                             className="form-control"
                             pattern="[0-9]{5}"
                             onChange={this.setZip}
@@ -298,7 +378,126 @@ class CheckoutForm extends Component {
         })
     }
 
+    // method to set current time
+    setOrderTime = () => {
+        // gets US Pacific time
+        const zone = "America/Los_Angeles";
+        let timeHours = DateTime.now().setZone(zone).hour;
+        let timeMinutes = DateTime.now().setZone(zone).minute;
+        const time = timeHours + ":" + timeMinutes;
+        this.setState({
+            orderTime: time
+        })
+        // sets user time
+        this.setState({
+            userOrderTime: this.toUserTime(timeHours, timeMinutes)
+        })
+    }
 
+    // method to delete cart on order
+    deleteCart = () => {
+        for (let i = 0; i < this.state.orderInfo[0].fromCart.length; i++) {
+            let id = this.state.orderInfo[0].fromCart[i].id;
+            fetch(`http://localhost:5000/cart/${id}`,
+                { method: "DELETE" }
+            )
+        }
+    }
+
+    // method to set ready time
+    setReadyTime = () => {
+        // Gets US Pacific time
+        const zone = "America/Los_Angeles";
+        let timeHours = DateTime.now().setZone(zone).hour;
+        let timeMinutes = DateTime.now().setZone(zone).minute;
+        // const to hold fees value
+        const fees = this.state.orderInfo[0].fees;
+
+        if (fees === 8) {
+            if ((timeHours >= 12 & timeHours < 14) | (timeHours >= 18 & timeHours < 20)) {
+                timeHours++;
+                this.setState({
+                    readyTime: timeHours + ":" + timeMinutes
+                })
+                // sets user ready time
+                this.setState({
+                    userReadyTime: this.toUserTime(timeHours, timeMinutes)
+                })
+            }
+            else {
+                // for converting minutes and hours
+                if (timeMinutes + 40 >= 60) {
+                    timeHours++;
+                    timeMinutes = timeMinutes - 20;
+                }
+                else {
+                    timeMinutes += 40;
+                }
+                this.setState({
+                    readyTime: timeHours + ":" + timeMinutes
+                })
+                // sets user ready time
+                this.setState({
+                    userReadyTime: this.toUserTime(timeHours, timeMinutes)
+                })
+            }
+        }
+        else {
+            if ((timeHours >= 12 & timeHours < 14) | (timeHours >= 18 & timeHours < 20)) {
+                // for converting minutes and hours
+                if (timeMinutes + 40 >= 60) {
+                    timeHours++;
+                    timeMinutes = timeMinutes - 20;
+                }
+                else {
+                    timeMinutes += 40;
+                }
+                this.setState({
+                    readyTime: timeHours + ":" + timeMinutes
+                })
+                // sets user ready time
+                this.setState({
+                    userReadyTime: this.toUserTime(timeHours, timeMinutes)
+                })
+            }
+            else {
+                // for converting minutes and hours
+                if (timeMinutes + 20 >= 60) {
+                    timeHours++;
+                    timeMinutes = timeMinutes - 40;
+                }
+                else {
+                    timeMinutes += 20;
+                }
+                this.setState({
+                    readyTime: timeHours + ":" + timeMinutes
+                })
+                // sets user ready time
+                this.setState({
+                    userReadyTime: this.toUserTime(timeHours, timeMinutes)
+                })
+            }
+        }
+    }
+
+    // method for converting hours and minutes to user display time
+    toUserTime = (hours, minutes) => {
+        let ampm = "AM";
+        // to convert to twelve hour pm time
+        if (hours > 12) {
+            hours = hours - 12;
+            ampm = "PM";
+        }
+        // for midnight
+        if (hours === 0) {
+            hours = 12;
+        }
+        // for minutes less that 10
+        if (minutes < 10) {
+            minutes = "0" + minutes;
+        }
+        return (hours + ":" + minutes + ampm);
+    }
 
     // delete checkout items when returning to cart
     deleteCheckout = () => {
@@ -327,8 +526,24 @@ class CheckoutForm extends Component {
         }
     }
 
+    // sends the checkout data to database on complete order
+    sendToDB = () => {
+        fetch(`http://localhost:5000/Orders`, {
+            method: 'POST',
+            headers: {
+                'Accepts': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(this.state)
+        })
+    }
+
     // checks to see if component mounts then make HTTP requests
     componentDidMount = () => {
+        // sets state to display an agree button 
+        this.setState({
+            submitForm: <button className="btn btn-primary" type="button" onClick={this.validateForm}>I Agree</button>
+        })
         // sets timeout to ensure post request is settled
         setTimeout(() => {
             // get request from database server

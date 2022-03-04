@@ -17,6 +17,7 @@
     "gh-pages": "^3.2.3",
     "intl-tel-input": "^17.0.15",
     "jquery": "^3.6.0",
+    "luxon": "^2.3.1",
     "node": "^17.4.0",
     "popper.js": "^1.16.1",
     "react": "^17.0.2",

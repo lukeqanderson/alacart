@@ -31,6 +31,16 @@
 .white-background {
     background-color: white;
 }
+.order-list{
+    padding: 0;
+}
+.order-list-item {
+    list-style: none;
+}
+.btn-refresh {
+    margin-left: 20px;
+    margin-right: 20px;
+}
 
 /* cart components */
 .cart-div {
@@ -143,4 +153,9 @@
 }
 .options-text {
     margin-top: 20px;
+}
+.thanks-message {
+    margin-top: 50px;
+    margin-bottom: 20px;
+    text-align: center;
 }
