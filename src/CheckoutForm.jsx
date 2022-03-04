@@ -30,11 +30,13 @@ class CheckoutForm extends Component {
             <>
                 <NavBar />
                 {/* if statement to thank them for purchasing on empty state */}
-                {this.state.orderInfo ?
+                {this.state.totalPrice === 0 ?
+
                     <div>
                         <h2 className="thanks-message">Thank You. Enjoy your meal!</h2>
                         <Link className="btn nav-link active" to="/Menu"><button className="btn btn-primary" type="button">Return to Menu</button></Link>
                     </div>
+
                     : <div className="checkout-div">
                         <h4>Customer Details</h4>
                         <br></br>
@@ -557,7 +559,7 @@ class CheckoutForm extends Component {
         setTimeout(() => {
             this.calculateTotalPrice()
             this.formOnDelivery()
-        }, 1000)
+        }, 200)
     }
 }
 

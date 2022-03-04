@@ -57,26 +57,31 @@ class Orders extends Component {
 
     // method that will change background for when an order is ready
     isReadyStyle(isReady, customer, index) {
-        // calculates time different to determine warning and late order styles
-        const orderTimeHours = parseInt(customer[index].readyTime.substr(0, customer[index].readyTime.indexOf(":"))) * 60
-        const orderTimeMinutes = parseInt(customer[index].readyTime.substr(customer[index].readyTime.indexOf(":") + 1, customer[index].readyTime.length - 1))
-        const currentTimeHours = parseInt(this.state.currentTime24.substr(0, this.state.currentTime24.indexOf(":"))) * 60
-        const currentTimeMinutes = parseInt(this.state.currentTime24.substr(this.state.currentTime24.indexOf(":") + 1, this.state.currentTime24.length - 1))
+        if (customer[index] !== null) {
+            // calculates time different to determine warning and late order styles
+            const orderTimeHours = parseInt(customer[index].readyTime.substr(0, customer[index].readyTime.indexOf(":"))) * 60
+            const orderTimeMinutes = parseInt(customer[index].readyTime.substr(customer[index].readyTime.indexOf(":") + 1, customer[index].readyTime.length - 1))
+            const currentTimeHours = parseInt(this.state.currentTime24.substr(0, this.state.currentTime24.indexOf(":"))) * 60
+            const currentTimeMinutes = parseInt(this.state.currentTime24.substr(this.state.currentTime24.indexOf(":") + 1, this.state.currentTime24.length - 1))
 
-        // to calculate difference in times
-        const timeDifference = (orderTimeHours + orderTimeMinutes) - (currentTimeHours + currentTimeMinutes)
+            // to calculate difference in times
+            const timeDifference = (orderTimeHours + orderTimeMinutes) - (currentTimeHours + currentTimeMinutes)
 
-        //for when true
-        if (isReady) {
-            return "green-background";
-        }
-        // for red late order
-        else if (timeDifference < 0) {
-            return "bg-danger"
-        }
-        // for yellow warning 
-        else if (timeDifference <= 10) {
-            return "bg-warning"
+            //for when true
+            if (isReady) {
+                return "green-background";
+            }
+            // for red late order
+            else if (timeDifference < 0) {
+                return "bg-danger"
+            }
+            // for yellow warning 
+            else if (timeDifference <= 10) {
+                return "bg-warning"
+            }
+            else {
+                return "";
+            }
         }
         else {
             return "";
